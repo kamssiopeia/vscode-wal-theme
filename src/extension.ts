@@ -5,6 +5,7 @@ import * as os from 'os';
 import * as chokidar from 'chokidar';
 import * as Color from 'color';
 import template from './template';
+import templateLighter from './template-lighter'
 
 const walCachePath = path.join(os.homedir(), '.cache', 'wal');
 let walColorsJsonPath: string | null = null;
@@ -100,6 +101,10 @@ function generateColorThemes() {
 	// Generate the bordered theme
 	const colorThemeBordered = template(colors, true);
 	fs.writeFileSync(path.join(__dirname,'..', 'themes', 'wal-bordered.json'), JSON.stringify(colorThemeBordered, null, 4));
+
+	// Generate the lighter theme
+	const colorThemeLighter = templateLighter(colors);
+	fs.writeFileSync(path.join(__dirname,'..', 'themes', 'wal-lighter.json'), JSON.stringify(colorThemeLighter, null, 4));
 }
 
 /**
