@@ -59,7 +59,6 @@ export function deactivate() {
 
 }
 
-
 /**
  * Generates the theme from the current color palette and overwrites the last one
  */
@@ -70,10 +69,6 @@ function generateColorThemes() {
 		const colorsRaw = fs.readFileSync(walColorsJsonPath!).toString();
 		
 			type WalJson = {
-				special: {
-					background: string,
-					foreground: string
-			},
 			colors: {
 				[key: string]: string
 				}
@@ -93,9 +88,6 @@ function generateColorThemes() {
 
 		colors = Object.values(colorsJson.colors)
 			.map(color => new Color(color));
-
-			colors[0] = Color(colorsJson?.special?.background);
-			colors[7] = Color(colorsJson?.special?.foreground);
 	} catch(error) {
 			vscode.window.showErrorMessage('Couldn\'t load colors from pywal cache, be sure to run pywal before updating.');
 			return;
