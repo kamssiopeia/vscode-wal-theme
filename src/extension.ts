@@ -7,12 +7,14 @@ import * as Color from 'color';
 import template from './template';
 
 const walCachePath = path.join(os.homedir(), '.cache', 'wal');
-const walColorsPath = path.join(walCachePath, 'colors');
-const walColorsJsonPath = path.join(walCachePath, 'colors.json');
+let walColorsJsonPath: string | null = null;
 let autoUpdateWatcher: chokidar.FSWatcher | null = null;
 
 
 export function activate(context: vscode.ExtensionContext) {
+	// Fetch json file name from config and create it's path
+	const colorsJsonFile = vscode.workspace.getConfiguration().get('walTheme.colorsJsonFile') as string;
+	walColorsJsonPath = path.join(walCachePath, colorsJsonFile);
 
 	// Register the update command
 	let disposable = vscode.commands.registerCommand('walTheme.update', generateColorThemes);
@@ -65,22 +67,19 @@ function generateColorThemes() {
 	// Import colors from pywal cache
 	let colors: Color[] | undefined;
 	try {
-		colors = fs.readFileSync(walColorsPath)
-										 .toString()
-										 .split(/\s+/, 16)
-			.map(hex => Color(hex));
+		const colorsRaw = fs.readFileSync(walColorsJsonPath!).toString();
 		
-		if (fs.existsSync(walColorsJsonPath)) {
 			type WalJson = {
 				special: {
 					background: string,
 					foreground: string
+			},
+			colors: {
+				[key: string]: string
 				}
 			};
 
 			let colorsJson: WalJson;
-			const colorsRaw = fs.readFileSync(walColorsJsonPath).toString();
-
 			try {
 				colorsJson = JSON.parse(colorsRaw);
 			} catch {
@@ -92,17 +91,14 @@ function generateColorThemes() {
 					.join('\n'));
 			}
 
+		colors = Object.values(colorsJson.colors)
+			.map(color => new Color(color));
+
 			colors[0] = Color(colorsJson?.special?.background);
 			colors[7] = Color(colorsJson?.special?.foreground);
-		}
 	} catch(error) {
-		// Not a complete failure if we have colors from the wal colors file, but failed to load from the colors.json
-		if (colors === undefined || colors.length === 0) {
 			vscode.window.showErrorMessage('Couldn\'t load colors from pywal cache, be sure to run pywal before updating.');
 			return;
-		}
-
-		vscode.window.showWarningMessage('Couldn\'t load all colors from pywal cache');
 	}
 		
 	// Generate the normal theme

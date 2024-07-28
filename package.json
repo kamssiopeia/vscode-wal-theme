@@ -50,6 +50,11 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Update automatically the theme when the pywal color palette changes"
+				},
+				"walTheme.colorsJsonFile": {
+					"type": "string",
+					"default": "colors.json",
+					"description": "Name of pywal's json file with color palette"
 				}
 			}
 		},
