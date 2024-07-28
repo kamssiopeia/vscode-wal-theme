@@ -70,6 +70,12 @@
 				"uiTheme": "vs-dark",
 				"path": "./themes/wal-bordered.json",
 				"_watch": true
+			},
+			{
+				"label": "Wal Lighter",
+				"uiTheme": "vs-dark",
+				"path": "./themes/wal-lighter.json",
+				"_watch": true
 			}
 		]
 	},
